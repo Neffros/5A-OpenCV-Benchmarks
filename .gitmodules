@@ -1,0 +1,7 @@
+[submodule "5A-OpenCV-Poker"]
+	path = 5A-OpenCV-Poker
+	url = https://github.com/Neffros/5A-OpenCV-Poker
+[submodule "OpenCV_Poker"]
+	path = OpenCV_Poker
+	url = https://github.com/IceBirdCiel/OpenCV_Poker
+    branch = quentin
