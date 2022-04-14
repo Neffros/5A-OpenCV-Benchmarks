@@ -7,7 +7,7 @@ cmake_policy(SET CMP0091 NEW)
 
 project(Benchmarking)
 
-add_executable(Benchmarking src/main.cpp)
+add_executable(Benchmarking src/main.cpp src/DataSerializer.cpp src/DataSerializer.h src/TableMatches.h src/TableMatches.cpp)
 
 set_property(TARGET Benchmarking PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 

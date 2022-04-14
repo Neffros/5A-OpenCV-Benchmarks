@@ -2,18 +2,25 @@
 
 #include <iostream>
 #include <opencv2/opencv.hpp>
-
+#include "TableMatches.h"
+#include "DataSerializer.h"
 
 int main(int argc, char ** argv){
-    /*
-     * TODO
-     * read cards atlas
-     * train two models
-     * exec prog 1 & 2 with image
-     * find card in selected rectangle
-     * compare results of prog 1 & 2
-     * compare execution time of prog 1 & 2
-     * */
+    TableMatches tableMatches;
+    tableMatches.imageName = "UNE IMAGE";
+    Card card;
+    card.cardValue = Value::Ace;
+    card.cardType = Type::Diamonds;
+    card.pos1 = cv::Point2f(0,1);
+    card.pos2 = cv::Point2f(1,2);
+    card.pos3 = cv::Point2f(2,5);
+    card.pos4 = cv::Point2f(6,3);
+    tableMatches.cards = std::vector<Card>({
+        card
+    });
+
+    DataSerializer::writeData("testData.json", tableMatches);
+    TableMatches res = DataSerializer::readData("testData.json");
 
     return 0;
 }
