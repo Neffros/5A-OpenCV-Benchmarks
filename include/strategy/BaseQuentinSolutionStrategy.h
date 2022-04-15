@@ -4,5 +4,5 @@
 
 struct BaseQuentinSolutionStrategy : public AQuentinSolutionStrategy
 {
-	SolutionBResult execute(cv::Mat image) const override;
+	SolutionBResult computeSolution(cv::Mat image) const override;
 };

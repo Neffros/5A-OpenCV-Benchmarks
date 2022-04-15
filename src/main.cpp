@@ -2,7 +2,9 @@
 
 #include "../Annotator/src/TableMatches.h"
 #include "../Annotator/src/DataSerializer.h"
+
 #include "../include/strategy/BaseLiorSolutionStrategy.h"
+#include "../include/strategy/BaseQuentinSolutionStrategy.h"
 
 void benchmark()
 {
@@ -10,11 +12,18 @@ void benchmark()
 		DataSerializer::readData("testData.json")
 	};
 
-	BaseLiorSolutionStrategy liorStrategy;
+	std::vector<ISolutionStrategy*> strategies
+	{
+		new BaseLiorSolutionStrategy(),
+		new BaseQuentinSolutionStrategy(),
+	};
 
 	for (auto tableMatches : expectedTableMatches)
 	{
-		// benchmark each solution
+		for (auto strategy : strategies)
+		{
+			// benchmark solution
+		}
 	}
 }
 
