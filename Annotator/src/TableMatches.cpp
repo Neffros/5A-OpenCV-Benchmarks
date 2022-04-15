@@ -3,10 +3,10 @@
 TableMatches TableMatches::fromJson(const nlohmann::json& data) {
     TableMatches result;
     result.imageName = data["imageName"];
-    result.cards = std::vector<Card>();
+    result.cards = std::vector<CardMatch>();
 
     for(auto& card : data["cards"]){
-        Card cardObj;
+        CardMatch cardObj;
         cardObj.cardType = (Type) card["type"];
         cardObj.cardValue = (Value) card["value"];
 
@@ -44,4 +44,8 @@ nlohmann::json TableMatches::toJson() {
     result["cards"] = cardsArray;
 
     return result;
+}
+
+TableMatches::TableMatches(const SolutionBResult& solResult) {
+    TableMatches result;
 }
