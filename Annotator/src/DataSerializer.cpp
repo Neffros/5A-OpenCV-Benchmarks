@@ -1,5 +1,3 @@
-// Created by Quentin Pamart on 14/04/2022.
-
 #include "DataSerializer.h"
 #include <fstream>
 
