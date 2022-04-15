@@ -6,4 +6,5 @@
 struct ISolutionStrategy
 {
     virtual CompareData execute(cv::Mat image, TableMatches expected) const = 0;
+    virtual std::string getName() const = 0;
 };
