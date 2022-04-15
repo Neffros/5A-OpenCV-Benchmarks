@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 
 #include "../Annotator/src/TableMatches.h"
 #include "../Annotator/src/DataSerializer.h"
@@ -8,7 +9,11 @@
 #include "../include/strategy/BaseLiorSolutionStrategy.h"
 #include "../include/strategy/BaseQuentinSolutionStrategy.h"
 
-SolutionExecutionData benchmarkImageSolution(std::shared_ptr<ISolutionStrategy> strategy, cv::Mat image, TableMatches expectedMatches)
+SolutionExecutionData benchmarkImageSolution(
+	const std::shared_ptr<ISolutionStrategy>& strategy,
+	const cv::Mat& image,
+	const TableMatches& expectedMatches
+)
 {
 	// TODO: add chrono for execution data
 
@@ -16,8 +21,8 @@ SolutionExecutionData benchmarkImageSolution(std::shared_ptr<ISolutionStrategy> 
 }
 
 BenchmarkData benchmark(
-	std::vector<TableMatches> expectedTableMatches,
-	std::vector<std::shared_ptr<ISolutionStrategy>> strategies
+	const std::vector<TableMatches>& expectedTableMatches,
+	const std::vector<std::shared_ptr<ISolutionStrategy>>& strategies
 )
 {
 	std::vector<SolutionData> solutions;
@@ -31,13 +36,22 @@ BenchmarkData benchmark(
 
 	for (TableMatches tableMatches : expectedTableMatches)
 	{
-		cv::Mat image = cv::imread(tableMatches.imagePath);
+		const cv::Mat image = cv::imread(tableMatches.imagePath);
 
 		for (int i = 0; i < strategies.size(); ++i)
 			graph.solutions[i].benchmarks.push_back(benchmarkImageSolution(strategies[i], image, tableMatches));
 	}
 	
 	return graph;
+}
+
+void writeJSON(const nlohmann::json& data, const std::string& filePath)
+{
+	std::ofstream file;
+
+	file.open(filePath);
+	file << data << std::endl;
+	file.close();
 }
 
 int main()
@@ -54,7 +68,7 @@ int main()
 
 	BenchmarkData data = benchmark(expectedTableMatches, strategies);
 
-	DataSerializer::writeData("test.json", data);
+	writeJSON(data.toJson(), "testGraph.json");
 
 	return 0;
 }

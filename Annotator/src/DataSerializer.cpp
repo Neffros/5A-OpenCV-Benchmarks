@@ -3,8 +3,7 @@
 
 #include <iostream>
 
-template <typename T>
-void DataSerializer::writeData(const std::string& fileName, T data) {
+void DataSerializer::writeData(const std::string& fileName, TableMatches data) {
     auto json = data.toJson();
     std::ofstream file;
     file.open(fileName);

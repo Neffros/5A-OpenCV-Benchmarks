@@ -7,8 +7,7 @@
 
 class DataSerializer {
 public:
-    template <typename T>
-    static void writeData(const std::string& fileName, T data);
+    static void writeData(const std::string& fileName, TableMatches data);
     static TableMatches readData(const std::string& fileName);
 };
 
