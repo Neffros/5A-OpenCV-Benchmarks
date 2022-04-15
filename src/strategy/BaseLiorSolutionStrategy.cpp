@@ -1,7 +1,7 @@
 #include "../../include/strategy/BaseLiorSolutionStrategy.h"
-#include "../../5A-OpenCV-Poker/src/Main.cpp"
+#include "../../5A-OpenCV-Poker/src/Main.h"
 
 SolutionAResult BaseLiorSolutionStrategy::computeSolution(cv::Mat image) const
 {
-	return compute(image);
+	return solA::compute(image);
 }
