@@ -56,7 +56,7 @@ void drawImg(cv::Mat img)
     cv::Mat output = img.clone();
     if(roiPoints.size() == 4)
     {
-        std::cout << "input time" << std::endl;
+        std::cout << "insert [card value] [card type]" << std::endl;
         cv::polylines(output,roiPoints,true, cv::Scalar(255,0,0),4, cv::LINE_8, 0);
         cv::polylines(img,roiPoints,true, cv::Scalar(255,0,0),4, cv::LINE_8, 0);
         cv::putText(output, "Input the card value and type as : [cardvalue] [type]", roiPoints[0], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255), 2);
