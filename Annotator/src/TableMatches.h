@@ -43,7 +43,7 @@ public:
     std::string imagePath;
     std::vector<CardMatch> cards;
 
-    nlohmann::json toJson();
+    nlohmann::json toJson() const;
     static TableMatches fromJson(const nlohmann::json& data);
 
     TableMatches() = default;

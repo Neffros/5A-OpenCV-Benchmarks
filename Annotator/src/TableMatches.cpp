@@ -21,7 +21,8 @@ TableMatches TableMatches::fromJson(const nlohmann::json& data) {
     return result;
 }
 
-nlohmann::json TableMatches::toJson() {
+nlohmann::json TableMatches::toJson() const
+{
     nlohmann::json result;
 
     result["imagePath"] = imagePath;
