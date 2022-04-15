@@ -3,7 +3,6 @@
 #include <string>
 #include "opencv2/core/types.hpp"
 #include "../../json/single_include/nlohmann/json.hpp"
-#include "../../OpenCV_Poker/src/SolutionBResult.h"
 
 
 enum class Type : unsigned short {
@@ -48,7 +47,6 @@ public:
     static TableMatches fromJson(const nlohmann::json& data);
 
     TableMatches() = default;
-    explicit TableMatches(const SolutionBResult& solResult);
 };
 
 
