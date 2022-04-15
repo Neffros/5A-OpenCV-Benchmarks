@@ -121,10 +121,10 @@ int main(int argc, char ** argv){
     cv::destroyAllWindows();
 
     //serialize user data
-    std::vector<Card> cards;
+    std::vector<CardMatch> cards;
     for(auto index = 0; index < cardPositions.size(); ++index)
     {
-        Card card;
+        CardMatch card;
         std::vector<std::string> words = split(cardDefinitions[index], " ");
         if(words.size() != 2)
         {
