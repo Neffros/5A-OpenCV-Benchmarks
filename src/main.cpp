@@ -12,10 +12,10 @@ void benchmark()
 		DataSerializer::readData("testData.json")
 	};
 
-	std::vector<ISolutionStrategy*> strategies
+	std::vector<std::shared_ptr<ISolutionStrategy>> strategies
 	{
-		new BaseLiorSolutionStrategy(),
-		new BaseQuentinSolutionStrategy(),
+		std::make_shared<BaseLiorSolutionStrategy>(),
+		std::make_shared<BaseQuentinSolutionStrategy>(),
 	};
 
 	for (auto tableMatches : expectedTableMatches)
