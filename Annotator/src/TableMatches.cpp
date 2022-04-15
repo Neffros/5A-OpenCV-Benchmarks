@@ -3,7 +3,7 @@
 TableMatches TableMatches::fromJson(const nlohmann::json& data) {
     TableMatches result;
     result.imagePath = data["imagePath"];
-    result.cards = std::vector<Card>();
+    result.cards = std::vector<CardMatch>();
 
     for(auto& card : data["cards"]){
         CardMatch cardObj;
