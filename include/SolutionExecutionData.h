@@ -5,8 +5,18 @@
 
 struct SolutionExecutionData
 {
-	ExecutionData benchmark;
-	CompareData match;
+	CompareData comparison;
+	ExecutionData performance;
 
-	SolutionExecutionData(ExecutionData benchmark, CompareData match) : benchmark(benchmark), match(match) { }
+	SolutionExecutionData(ExecutionData performance, CompareData comparison) : performance(performance), comparison(comparison) { }
+
+    nlohmann::json toJson() const
+    {
+        nlohmann::json result;
+
+        result["comparison"] = this->comparison.toJson();
+        result["performance"] = this->performance.toJson();
+
+        return result;
+    }
 };
