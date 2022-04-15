@@ -31,7 +31,7 @@ BenchmarkData benchmark(
 
 	for (TableMatches tableMatches : expectedTableMatches)
 	{
-		cv::Mat image;
+		cv::Mat image = cv::imread(tableMatches.imagePath);
 
 		for (int i = 0; i < strategies.size(); ++i)
 			graph.solutions[i].benchmarks.push_back(benchmarkImageSolution(strategies[i], image, tableMatches));
@@ -52,7 +52,9 @@ int main()
 		std::make_shared<BaseQuentinSolutionStrategy>(),
 	};
 
-	benchmark(expectedTableMatches, strategies);
+	BenchmarkData data = benchmark(expectedTableMatches, strategies);
+
+	DataSerializer::writeData("test.json", data);
 
 	return 0;
 }
