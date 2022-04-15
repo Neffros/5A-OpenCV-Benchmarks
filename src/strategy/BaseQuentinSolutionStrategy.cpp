@@ -5,3 +5,8 @@ SolutionBResult BaseQuentinSolutionStrategy::computeSolution(cv::Mat image) cons
 {
 	return solB::compute(image);
 }
+
+std::string BaseQuentinSolutionStrategy::getName() const
+{
+	return "Base Quentin Solution Strategy";
+}

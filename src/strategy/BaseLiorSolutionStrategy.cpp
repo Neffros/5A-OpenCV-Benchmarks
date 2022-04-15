@@ -5,3 +5,8 @@ SolutionAResult BaseLiorSolutionStrategy::computeSolution(cv::Mat image) const
 {
 	return solA::compute(image);
 }
+
+std::string BaseLiorSolutionStrategy::getName() const
+{
+	return "Base Lior Solution Strategy";
+}

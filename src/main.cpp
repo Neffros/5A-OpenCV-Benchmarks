@@ -3,32 +3,56 @@
 #include "../Annotator/src/TableMatches.h"
 #include "../Annotator/src/DataSerializer.h"
 
+#include "../include/BenchmarkData.h"
+
 #include "../include/strategy/BaseLiorSolutionStrategy.h"
 #include "../include/strategy/BaseQuentinSolutionStrategy.h"
 
-void benchmark()
+SolutionExecutionData benchmarkImageSolution(std::shared_ptr<ISolutionStrategy> strategy, cv::Mat image, TableMatches expectedMatches)
 {
-	std::vector expectedTableMatches = {
-		DataSerializer::readData("testData.json")
-	};
+	// TODO: add chrono for execution data
 
-	std::vector<ISolutionStrategy*> strategies
-	{
-		new BaseLiorSolutionStrategy(),
-		new BaseQuentinSolutionStrategy(),
-	};
+	return SolutionExecutionData(ExecutionData(0.1f), strategy->execute(image, expectedMatches));
+}
 
-	for (auto tableMatches : expectedTableMatches)
+BenchmarkData benchmark(
+	std::vector<TableMatches> expectedTableMatches,
+	std::vector<std::shared_ptr<ISolutionStrategy>> strategies
+)
+{
+	std::vector<SolutionData> solutions;
+
+	solutions.reserve(strategies.size());
+
+	for (std::shared_ptr<ISolutionStrategy> strategy : strategies)
+		solutions.push_back(SolutionData(strategy->getName()));
+
+	BenchmarkData graph(expectedTableMatches, solutions);
+
+	for (TableMatches tableMatches : expectedTableMatches)
 	{
-		for (auto strategy : strategies)
-		{
-			// benchmark solution
-		}
+		cv::Mat image;
+
+		for (int i = 0; i < strategies.size(); ++i)
+			graph.solutions[i].benchmarks.push_back(benchmarkImageSolution(strategies[i], image, tableMatches));
 	}
+	
+	return graph;
 }
 
 int main()
 {
-    benchmark();
+	std::vector<TableMatches> expectedTableMatches = {
+		DataSerializer::readData("testData.json")
+	};
+
+	std::vector<std::shared_ptr<ISolutionStrategy>> strategies
+	{
+		std::make_shared<BaseLiorSolutionStrategy>(),
+		std::make_shared<BaseQuentinSolutionStrategy>(),
+	};
+
+	benchmark(expectedTableMatches, strategies);
+
 	return 0;
 }

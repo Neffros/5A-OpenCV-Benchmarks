@@ -21,9 +21,8 @@ target_compile_options(Benchmarker PRIVATE /Zc:__cplusplus)
 target_compile_features(Benchmarker PRIVATE cxx_std_20)
 
 find_package(OpenCV CONFIG REQUIRED)
+target_link_libraries(Benchmarker PRIVATE ${OpenCV_LIBS})
 
-target_link_libraries(Benchmarker PRIVATE
-        ${OpenCV_LIBS})
 
 find_package(magic_enum CONFIG REQUIRED)
 target_link_libraries(Benchmarker PRIVATE magic_enum::magic_enum)
