@@ -2,6 +2,7 @@
 
 #include "CompareData.h"
 #include "../Annotator/src/TableMatches.h"
+#define TOLERANCE_CENTER_DISTANCE 10
 
 struct ISolutionStrategy
 {
