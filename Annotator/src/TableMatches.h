@@ -40,7 +40,7 @@ struct Card {
 
 class TableMatches {
 public:
-    std::string imageName;
+    std::string imagePath;
     std::vector<Card> cards;
 
     nlohmann::json toJson();
