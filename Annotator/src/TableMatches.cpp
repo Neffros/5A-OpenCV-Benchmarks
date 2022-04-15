@@ -47,5 +47,4 @@ nlohmann::json TableMatches::toJson() {
 }
 
 TableMatches::TableMatches(const SolutionBResult& solResult) {
-    TableMatches result;
 }
