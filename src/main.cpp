@@ -11,111 +11,95 @@
 #include "../include/strategy/BaseLiorSolutionStrategy.h"
 #include "../include/strategy/BaseQuentinSolutionStrategy.h"
 
-SolutionExecutionData benchmarkImageSolution(
-	const std::shared_ptr<ISolutionStrategy>& strategy,
-	const cv::Mat& image,
-	const TableMatches& expectedMatches
-)
+std::map<std::string, std::map<std::string, double>> createSimilarityMap()
 {
-	// TODO: add chrono for execution data
-    std::chrono::time_point<std::chrono::system_clock> timerStart = std::chrono::system_clock::now();
-    CompareData executionData = strategy->execute(image, expectedMatches);
-    std::chrono::time_point<std::chrono::system_clock> timerEnd = std::chrono::system_clock::now();
-    float executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(timerEnd - timerStart).count();
-	return SolutionExecutionData(ExecutionData(executionTime), executionData);
-}
+    static const std::vector<int> cardTypes = { 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2 };
+    static const std::vector<std::string> colors = { "Clubs", "Spades", "Diamonds", "Hearts" };
 
-BenchmarkData benchmark(
-	const std::vector<TableMatches>& expectedTableMatches,
-	const std::vector<std::shared_ptr<ISolutionStrategy>>& strategies
-)
-{
-	std::vector<SolutionData> solutions;
-
-    std::cout << "Reading cards atlas..." << std::endl;
-    cv::Mat cardsAtlas = cv::imread("resources/cards.jpg");
-
-    // building atlas similarities
+    const cv::Mat cardsAtlas = cv::imread("resources/cards.jpg");
+    const int width = cardsAtlas.cols / 4;
+    const int height = cardsAtlas.rows / 13;
+    
     std::map<std::string, std::map<std::string, double>> similarityMap;
+    cv::Mat card;
+
+    for (int i = 0; i < 4; ++i)
     {
-        const std::vector<int> cardTypes = {
-            14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2
-        };
-        const std::vector<std::string> colors = {
-            "Clubs", "Spades", "Diamonds", "Hearts"
-        };
+        for (int j = 0; j < 13; ++j)
+        {
+            card = cardsAtlas(cv::Rect(i * width + 5, j * height + 5, width - 5, height - 5));
+            cv::Mat tmp;
+            cv::cvtColor(card, tmp, cv::COLOR_BGR2GRAY);
 
-        int width = cardsAtlas.cols / 4;
-        int height = cardsAtlas.rows / 13;
+            card = tmp;
+            cv::resize(tmp, card, cv::Size(width * 2, height * 2));
 
-        cv::Mat card;
-        for(int i = 0; i < 4; ++i){
-            for(int j = 0; j < 13; ++j){
-                card = cardsAtlas(cv::Rect(i * width + 5, j * height + 5, width - 5, height - 5));
-                cv::Mat tmp;
-                cv::cvtColor(card, tmp, cv::COLOR_BGR2GRAY);
+            Card newCard(card, cardTypes[j], colors[i]);
 
-                card = tmp;
-                cv::resize(tmp, card, cv::Size(width * 2, height * 2));
+            std::stringstream cardNameStream;
+            cardNameStream << cardTypes[j] << colors[i];
+            std::string cardName = cardNameStream.str();
 
-                Card newCard(card, cardTypes[j], colors[i]);
+            cv::Mat hist1Mat, hist2Mat;
 
-                std::stringstream cardNameStream;
-                cardNameStream << cardTypes[j] << colors[i];
-                std::string cardName = cardNameStream.str();
+            for (int k = 0; k < colors.size(); ++k)
+            {
+                for (int l = 0; l < cardTypes.size(); ++l)
+                {
+                    card = cardsAtlas(cv::Rect(k * width + 5, l * height + 5, width - 5, height - 5));
+                    cv::cvtColor(card, tmp, cv::COLOR_BGR2GRAY);
 
-                cv::Mat hist1Mat, hist2Mat;
+                    card = tmp;
+                    cv::resize(tmp, card, cv::Size(width * 2, height * 2));
+                    cardNameStream.str("");
+                    cardNameStream << cardTypes[l] << colors[k];
+                    std::string card2Name = cardNameStream.str();
 
-                for(int i2 = 0; i2 < 4; ++i2){
-                    for(int j2 = 0; j2 < 13; ++j2){
-                        card = cardsAtlas(cv::Rect(i2 * width + 5, j2 * height + 5, width - 5, height - 5));
-                        cv::cvtColor(card, tmp, cv::COLOR_BGR2GRAY);
+                    cv::Mat res;
+                    cv::absdiff(newCard.data, card, res);
+                    res.convertTo(res, CV_8UC1);
 
-                        card = tmp;
-                        cv::resize(tmp, card, cv::Size(width * 2, height * 2));
-                        cardNameStream.str("");
-                        cardNameStream << cardTypes[j2] << colors[i2];
-                        std::string card2Name = cardNameStream.str();
+                    res = res.reshape(1, res.total() * res.channels());
+                    std::vector<uchar> vec = res.isContinuous() ? res : res.clone();
 
-                        cv::Mat res;
-                        cv::absdiff(newCard.data, card, res);
-                        res.convertTo(res, CV_8UC1);
-
-                        res = res.reshape(1, res.total() * res.channels());
-                        std::vector<uchar> vec = res.isContinuous() ? res : res.clone();
-
-                        double matchRate = 1-static_cast<double>(std::count_if(vec.begin(), vec.end(),
-                                              [] (int i) { return i > 10; })) / (vec.size());
-
-                        //double matchRate = 1-cv::norm(newCard.data, card, cv::NORM_L2);
-
-                        similarityMap[cardName][card2Name] = matchRate;
-                    }
+                    similarityMap[cardName][card2Name] = 1 - static_cast<double>(std::count_if(vec.begin(), vec.end(), [](int i) { return i > 10; })) / (vec.size());
                 }
             }
         }
     }
 
+    return similarityMap;
+}
+
+BenchmarkData benchmark(
+	const std::vector<TableMatches>& expectedTableMatches,
+	const std::vector<std::shared_ptr<ISolutionStrategy>>& solutions
+)
+{
+    std::cout << "Reading cards atlas..." << std::endl;
+
+    auto similarityMap = createSimilarityMap();
+
     std::cout << "Done, starting benchmark..." << std::endl;
 
-	solutions.reserve(strategies.size());
+    std::vector<SolutionData> solutionResults;
+    solutionResults.reserve(solutions.size());
 
-	for (const std::shared_ptr<ISolutionStrategy>& strategy : strategies) {
-        strategy->similarityMap = similarityMap;
-        solutions.push_back(SolutionData(strategy->getName()));
+	for (const std::shared_ptr<ISolutionStrategy>& solution : solutions)
+    {
+        solution->similarityMap = similarityMap;
+        solutionResults.push_back(SolutionData(solution->getName()));
     }
-
-	BenchmarkData graph(expectedTableMatches, solutions);
 
 	for (TableMatches tableMatches : expectedTableMatches)
 	{
 		const cv::Mat image = cv::imread(tableMatches.imagePath);
 
-		for (int i = 0; i < strategies.size(); ++i)
-			graph.solutions[i].benchmarks.push_back(benchmarkImageSolution(strategies[i], image, tableMatches));
+		for (int i = 0; i < solutions.size(); ++i)
+            solutionResults[i].benchmarks.push_back(solutions[i]->execute(image, tableMatches));
 	}
 
-	return graph;
+    return BenchmarkData(expectedTableMatches, solutionResults);
 }
 
 void writeJSON(const nlohmann::json& data, const std::string& filePath)
@@ -129,19 +113,19 @@ void writeJSON(const nlohmann::json& data, const std::string& filePath)
 
 int main()
 {
-	std::vector<TableMatches> expectedTableMatches = {
+    // TODO : Add Benchmarker class
+
+	const std::vector<TableMatches> expectedTableMatches = {
 		DataSerializer::readData("testData.json")
 	};
 
-	std::vector<std::shared_ptr<ISolutionStrategy>> strategies
+	const std::vector<std::shared_ptr<ISolutionStrategy>> solutions
 	{
 		std::make_shared<BaseLiorSolutionStrategy>(),
 		std::make_shared<BaseQuentinSolutionStrategy>(),
 	};
 
-	BenchmarkData data = benchmark(expectedTableMatches, strategies);
-
-	writeJSON(data.toJson(), "testGraph.json");
+	writeJSON(benchmark(expectedTableMatches, solutions).toJson(), "testGraph.json");
 
 	return 0;
 }

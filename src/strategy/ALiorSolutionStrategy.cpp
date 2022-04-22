@@ -60,7 +60,8 @@ CompareData ALiorSolutionStrategy::compare(TableMatches expected, SolutionAResul
 
             matchRate = similarityMap.at(cardName).at(card2Name);
         }
-        CardData cardData(currentCard.cardValue, currentCard.cardType, matchRate);
+
+        CardData cardData(currentCard.cardValue, currentCard.cardType, currentCard.characteristics, matchRate);
         result.existingCards.push_back(cardData);
     }
 
