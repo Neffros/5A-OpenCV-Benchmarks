@@ -17,11 +17,10 @@ SolutionExecutionData benchmarkImageSolution(
 	const TableMatches& expectedMatches
 )
 {
-	// TODO: add chrono for execution data
     std::chrono::time_point<std::chrono::system_clock> timerStart = std::chrono::system_clock::now();
     CompareData executionData = strategy->execute(image, expectedMatches);
     std::chrono::time_point<std::chrono::system_clock> timerEnd = std::chrono::system_clock::now();
-    float executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(timerEnd - timerStart).count();
+    float executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(timerEnd - timerStart).count() / 1000;
 	return SolutionExecutionData(ExecutionData(executionTime), executionData);
 }
 
@@ -130,7 +129,7 @@ void writeJSON(const nlohmann::json& data, const std::string& filePath)
 int main()
 {
 	std::vector<TableMatches> expectedTableMatches = {
-		DataSerializer::readData("testData.json")
+		DataSerializer::readData("easyData.json")
 	};
 
 	std::vector<std::shared_ptr<ISolutionStrategy>> strategies
