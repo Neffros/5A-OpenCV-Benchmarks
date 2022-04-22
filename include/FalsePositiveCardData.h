@@ -47,7 +47,7 @@ private:
         }
 
         const cv::Mat cardImage = tableImage(cv::Rect(min.x, min.y, max.x - min.x, max.y - min.y));
-        const std::string path = "./false_positives/" + std::to_string(i++) + ".jpg";
+        const std::string path = "./resources/false-positive-" + std::to_string(i++) + ".jpg";
 
         cv::imwrite(path, cardImage);
 
