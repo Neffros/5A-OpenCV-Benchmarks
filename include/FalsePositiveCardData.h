@@ -4,10 +4,15 @@
 
 struct FalsePositiveCardData
 {
+    std::string imagePath;
     Type type;
     Value value;
 
-    FalsePositiveCardData(Value value, Type type) : value(value), type(type) { }
+    FalsePositiveCardData(
+        const Value& value,
+        const Type& type,
+        const std::string& imagePath
+    ) : imagePath(imagePath), type(type), value(value) { }
 
     nlohmann::json toJson() const
     {

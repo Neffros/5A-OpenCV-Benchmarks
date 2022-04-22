@@ -42,7 +42,7 @@ CompareData AQuentinSolutionStrategy::compare(TableMatches expected, SolutionBRe
             std::string card2Name = cardNameStream.str();
 
             matchRate = similarityMap.at(cardName).at(card2Name);
-            CardData cardData(currentCard.cardValue, currentCard.cardType, matchRate);
+            CardData cardData(currentCard.cardValue, currentCard.cardType, currentCard.characteristics, matchRate);
             result.existingCards.push_back(cardData);
         }
         else
