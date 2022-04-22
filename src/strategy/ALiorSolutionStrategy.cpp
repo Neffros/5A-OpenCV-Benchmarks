@@ -1,6 +1,6 @@
 #include "../../include/strategy/ALiorSolutionStrategy.h"
 
-CompareData ALiorSolutionStrategy::compare(TableMatches expected, SolutionAResult output) const {
+CompareData ALiorSolutionStrategy::compare(const TableMatches& expected, const SolutionAResult& output, const cv::Mat& image) const {
     // TD : Comparer expected et output
 
     int expectedCount = expected.cards.size();

@@ -4,6 +4,6 @@
 
 struct BaseLiorSolutionStrategy : public ALiorSolutionStrategy
 {
-	SolutionAResult computeSolution(cv::Mat image) const override;
+	SolutionAResult computeSolution(const cv::Mat& image) const override;
 	std::string getName() const override;
 };

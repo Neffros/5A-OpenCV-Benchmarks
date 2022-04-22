@@ -8,12 +8,10 @@ cmake_policy(SET CMP0091 NEW)
 project(Benchmarker)
 
 add_executable(Benchmarker
-    src/main.cpp
-    Annotator/src/DataSerializer.cpp Annotator/src/TableMatches.cpp src/strategy/ALiorSolutionStrategy.cpp src/strategy/AQuentinSolutionStrategy.cpp
+    Annotator/src/DataSerializer.cpp Annotator/src/TableMatches.cpp
     5A-OpenCV-Poker/src/Main.cpp 5A-OpenCV-Poker/src/Image.cpp 5A-OpenCV-Poker/src/PokerAnalyzer.cpp 5A-OpenCV-Poker/src/PokerCard.cpp 5A-OpenCV-Poker/src/PokerTable.cpp
     OpenCV_Poker/src/Main.cpp OpenCV_Poker/src/DataSetCards.cpp OpenCV_Poker/src/MatchCards.cpp OpenCV_Poker/src/Card.cpp
-    src/strategy/BaseLiorSolutionStrategy.cpp src/strategy/BaseQuentinSolutionStrategy.cpp
-)
+    src/main.cpp src/strategy/ALiorSolutionStrategy.cpp src/strategy/AQuentinSolutionStrategy.cpp src/strategy/BaseLiorSolutionStrategy.cpp src/strategy/BaseQuentinSolutionStrategy.cpp src/FalsePositiveCardData.cpp)
 
 set_property(TARGET Benchmarker PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
