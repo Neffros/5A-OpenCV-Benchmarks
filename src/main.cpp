@@ -1,5 +1,7 @@
 #include <iostream>
 #include <fstream>
+#include <chrono>
+#include <ctime>
 
 #include "../Annotator/src/TableMatches.h"
 #include "../Annotator/src/DataSerializer.h"
@@ -16,8 +18,11 @@ SolutionExecutionData benchmarkImageSolution(
 )
 {
 	// TODO: add chrono for execution data
-
-	return SolutionExecutionData(ExecutionData(0.1f), strategy->execute(image, expectedMatches));
+    std::chrono::time_point<std::chrono::system_clock> timerStart = std::chrono::system_clock::now();
+    CompareData executionData = strategy->execute(image, expectedMatches);
+    std::chrono::time_point<std::chrono::system_clock> timerEnd = std::chrono::system_clock::now();
+    float executionTime = std::chrono::duration_cast<std::chrono::milliseconds>(timerEnd - timerStart).count();
+	return SolutionExecutionData(ExecutionData(executionTime), executionData);
 }
 
 BenchmarkData benchmark(
