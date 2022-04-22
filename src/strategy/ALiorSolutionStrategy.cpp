@@ -50,8 +50,6 @@ CompareData ALiorSolutionStrategy::compare(const TableMatches& expected, const S
 				const cv::Point2f centerOutput = (outputEdges[0] + outputEdges[1] + outputEdges[2] + outputEdges[3]) / 4;
 				const double distance = norm(centerOutput - centerExpected);
 
-				std::cout << distance << std::endl;
-
 				return distance < TOLERANCE_CENTER_DISTANCE;
 			}
 		);
