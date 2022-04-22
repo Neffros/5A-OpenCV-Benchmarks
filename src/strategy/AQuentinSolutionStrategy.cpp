@@ -1,4 +1,5 @@
 #include "../../include/strategy/AQuentinSolutionStrategy.h"
+#include <iostream>
 
 Type getColor(const std::string& color);
 
@@ -7,30 +8,40 @@ CompareData AQuentinSolutionStrategy::compare(TableMatches expected, SolutionBRe
 	// TD : Comparer expected et output
 
     int expectedCount = expected.cards.size();
+    std::cout << "Solution Quentin FOUND " << output.cardsInImage.size() << " cards" << std::endl;
 
     CompareData result{};
 
-    for(int i = 0; i < expectedCount; ++i){
+    for (int i = 0; i < expectedCount; ++i) {
         auto currentCard = expected.cards[i];
-        float matchRate = 0;
+        double matchRate = 0;
 
-        auto found = std::find_if(output.cardsInImage.begin(), output.cardsInImage.end(), [currentCard] (const CardInImage& c) -> bool {
-            return (int) getColor(c.card.cardColor) == (int) currentCard.cardType && (int) c.card.cardType == (int) currentCard.cardValue;
-        });
-        if(found != std::end(output.cardsInImage)){
-            // found, check distance
+        cv::Point2f centerExpected =
+                (currentCard.pos1 + currentCard.pos2 + currentCard.pos3 + currentCard.pos4) / 4;
 
-            cv::Point2f centerExpected = (currentCard.pos1 + currentCard.pos2 + currentCard.pos3 + currentCard.pos4) / 4;
-            auto outputEdges = found->positions;
-            cv::Point2f centerOutput = (outputEdges[0] + outputEdges[1] + outputEdges[2] + outputEdges[3]) / 4;
-            double distance = norm(centerOutput - centerExpected);
-            if(distance < TOLERANCE_CENTER_DISTANCE){
-                if (distance == 0) matchRate = 1;
-                else {
-                    matchRate = TOLERANCE_CENTER_DISTANCE / distance;
-                    matchRate = matchRate > 1 ? 1 : matchRate;
-                }
-            }
+        auto found = std::find_if(output.cardsInImage.begin(), output.cardsInImage.end(),
+                                  [centerExpected](const CardInImage &c) -> bool {
+                                      auto outputEdges = c.positions;
+                                      cv::Point2f centerOutput = (outputEdges[0] + outputEdges[1] + outputEdges[2] + outputEdges[3]) / 4;
+                                      double distance = norm(centerOutput - centerExpected);
+                                      std::cout << distance << std::endl;
+                                      return distance < TOLERANCE_CENTER_DISTANCE;
+                                  });
+
+        if (found != std::end(output.cardsInImage)) {
+            const std::vector<std::string> colors = {
+                "Clubs", "Spades", "Diamonds", "Hearts"
+            };
+
+            std::stringstream cardNameStream;
+            cardNameStream << (int) currentCard.cardValue << colors[(int)currentCard.cardType];    // valeur -> couleur
+            std::string cardName = cardNameStream.str();
+
+            cardNameStream.str("");
+            cardNameStream << (int) found->card.cardType << found->card.cardColor;
+            std::string card2Name = cardNameStream.str();
+
+            matchRate = similarityMap.at(cardName).at(card2Name);
         }
         CardData cardData(currentCard.cardValue, currentCard.cardType, matchRate);
         result.existingCards.push_back(cardData);

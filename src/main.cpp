@@ -72,8 +72,17 @@ BenchmarkData benchmark(
                         cardNameStream << cardTypes[j2] << colors[i2];
                         std::string card2Name = cardNameStream.str();
 
+                        cv::Mat res;
+                        cv::absdiff(newCard.data, card, res);
+                        res.convertTo(res, CV_8UC1);
 
-                        double matchRate = 1-cv::norm(newCard.data, card, cv::NORM_L2);
+                        res = res.reshape(1, res.total() * res.channels());
+                        std::vector<uchar> vec = res.isContinuous() ? res : res.clone();
+
+                        double matchRate = 1-static_cast<double>(std::count_if(vec.begin(), vec.end(),
+                                              [] (int i) { return i > 10; })) / (vec.size());
+
+                        //double matchRate = 1-cv::norm(newCard.data, card, cv::NORM_L2);
 
                         similarityMap[cardName][card2Name] = matchRate;
                     }
@@ -86,8 +95,10 @@ BenchmarkData benchmark(
 
 	solutions.reserve(strategies.size());
 
-	for (std::shared_ptr<ISolutionStrategy> strategy : strategies)
-		solutions.push_back(SolutionData(strategy->getName()));
+	for (const std::shared_ptr<ISolutionStrategy>& strategy : strategies) {
+        strategy->similarityMap = similarityMap;
+        solutions.push_back(SolutionData(strategy->getName()));
+    }
 
 	BenchmarkData graph(expectedTableMatches, solutions);
 
@@ -98,7 +109,7 @@ BenchmarkData benchmark(
 		for (int i = 0; i < strategies.size(); ++i)
 			graph.solutions[i].benchmarks.push_back(benchmarkImageSolution(strategies[i], image, tableMatches));
 	}
-	
+
 	return graph;
 }
 
