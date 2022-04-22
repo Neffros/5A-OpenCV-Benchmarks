@@ -56,10 +56,10 @@ CompareData AQuentinSolutionStrategy::compare(const TableMatches& expected, cons
 		const auto& found = std::find_if(
 			output.cardsInImage.begin(),
 			output.cardsInImage.end(),
-			[centerExpected](const CardInImage& c) -> bool {
+			[&centerExpected](const CardInImage& c) -> bool {
 				const auto& outputEdges = c.positions;
 				const cv::Point2f centerOutput = (outputEdges[0] + outputEdges[1] + outputEdges[2] + outputEdges[3]) / 4;
-				double distance = norm(centerOutput - centerExpected);
+				const double distance = norm(centerOutput - centerExpected);
 
 				std::cout << distance << std::endl;
 
@@ -67,6 +67,8 @@ CompareData AQuentinSolutionStrategy::compare(const TableMatches& expected, cons
 			}
 		);
 
+		double matchRate = 0;
+		
 		if (found != std::end(output.cardsInImage)) {
 			static const std::vector<std::string> colors = { "Clubs", "Spades", "Diamonds", "Hearts" };
 
@@ -78,16 +80,13 @@ CompareData AQuentinSolutionStrategy::compare(const TableMatches& expected, cons
 			cardNameStream << (int)found->card.cardType << found->card.cardColor;
 			std::string card2Name = cardNameStream.str();
 
-			CardData cardData(currentCard.cardValue, currentCard.cardType, currentCard.characteristics, similarityMap.at(cardName).at(card2Name));
-			result.existingCards.push_back(cardData);
+			matchRate = similarityMap.at(cardName).at(card2Name);
 
 			foundCards.push_back(*found);
 		}
-		else
-		{
-			CardData cardData(currentCard.cardValue, currentCard.cardType, currentCard.characteristics, 0);
-			result.existingCards.push_back(cardData);
-		}
+
+		CardData cardData(currentCard.cardValue, currentCard.cardType, currentCard.characteristics, matchRate);
+		result.existingCards.push_back(cardData);
 	}
 
 	for (const auto& falsePositiveCard : findFalsePositiveCards(output.cardsInImage, foundCards))
