@@ -28,9 +28,18 @@ enum class Value : unsigned short{
     Two = 2
 };
 
+enum class Characteristics : unsigned short{
+    Clear =  0,
+    Angled = 1,
+    Bright = 2,
+    Hidden = 3,
+    Dark = 4
+};
+
 struct CardMatch {
     Value cardValue;
     Type cardType;
+    std::vector<Characteristics> characteristics;
 
     cv::Point2f pos1;
     cv::Point2f pos2;

@@ -35,10 +35,18 @@ const std::map<std::string, unsigned short> cardValues = {
         {"king",13},
         { "ace",14},
 };
+
+const std::map<std::string, unsigned short> cardCharacteristics = {
+        {"clear", 0},
+        {"angled", 1},
+        { "bright", 2},
+        { "hidden", 3},
+        { "dark", 4}
+};
+
 //function called on click, gets the click position
 void callBackFunc(int event, int x, int y, int flags, void* userdata) {
     if (event == cv::EVENT_LBUTTONDOWN) {
-
         if(currentIndex == 4)
         {
             roiPoints.clear();
@@ -46,7 +54,6 @@ void callBackFunc(int event, int x, int y, int flags, void* userdata) {
         }
         roiPoints.emplace_back(x,y);
         currentIndex++;
-
     }
 }
 
@@ -56,7 +63,8 @@ void drawImg(cv::Mat img)
     cv::Mat output = img.clone();
     if(roiPoints.size() == 4)
     {
-        std::cout << "insert [card value] [card type]" << std::endl;
+        std::cout << "insert [card value] [card type] [card carcteristics each seperated by a space]" << std::endl;
+        std::cout << "available characteristics : clear, angled, bright, hidden, dark" << std::endl;
         cv::polylines(output,roiPoints,true, cv::Scalar(255,0,0),4, cv::LINE_8, 0);
         cv::polylines(img,roiPoints,true, cv::Scalar(255,0,0),4, cv::LINE_8, 0);
         cv::putText(output, "Input the card value and type as : [cardvalue] [type]", roiPoints[0], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255), 2);
@@ -101,12 +109,13 @@ int main(int argc, char ** argv){
     cv::setMouseCallback("img", callBackFunc);
 
     bool finished = false;
-    //comptue every 16 frames while the esc key isn't pressed
+    //compute every 16 frames while the esc key isn't pressed
     while(!finished)
     {
         if(inputCardName)
         {
             std::getline (std::cin,name);
+            std::cout << "card registered. return to the image to annotate more cards or press esc on the image to finish." << std::endl;
             cardDefinitions.emplace_back(name);
 
             cv::putText(img, name, roiPoints[0], cv::FONT_HERSHEY_PLAIN, 1, cv::Scalar(0,0,255), 2);
@@ -126,7 +135,7 @@ int main(int argc, char ** argv){
     {
         CardMatch card;
         std::vector<std::string> words = split(cardDefinitions[index], " ");
-        if(words.size() != 2)
+        if(words.size() < 2)
         {
             std::cerr << "invalid card format for input: " << cardDefinitions[index] << std::endl;
             return -1;
@@ -143,6 +152,30 @@ int main(int argc, char ** argv){
             std::cerr << "invalid card type for input: " << words[1] <<std::endl;
             return -1;
         }
+        if(words.size() == 2)
+        {
+            card.characteristics.push_back(Characteristics::Clear);
+        }
+        else
+        {
+            for(int i = 2; i < words.size(); ++i)
+            {
+                if (!cardCharacteristics.contains(words[i]))
+                {
+                    std::cout << words[i] << " is not recognized as a characteristic" << std::endl;
+                    continue;
+                }
+
+                auto itCharacterstics = cardCharacteristics.find(words[i]);
+                card.characteristics.push_back((Characteristics)itCharacterstics->second);
+
+            }
+            if(card.characteristics.empty())
+            {
+                card.characteristics.push_back(Characteristics::Clear);
+            }
+        }
+
 
         auto itType = cardTypes.find(words[1]);
         card.cardType =(Type)itType->second;
