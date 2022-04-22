@@ -14,7 +14,7 @@ struct CardData
     {
         nlohmann::json result;
 
-        result["matchRate"] = (ushort)this->matchRate;
+        result["matchRate"] = (float)this->matchRate;
         result["type"] = (ushort)this->type;
         result["value"] = (ushort)this->value;
 

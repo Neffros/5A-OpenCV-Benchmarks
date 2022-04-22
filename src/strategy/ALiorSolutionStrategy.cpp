@@ -21,8 +21,8 @@ CompareData ALiorSolutionStrategy::compare(TableMatches expected, SolutionAResul
             auto outputEdges = c.tableEdges;
             cv::Point2f centerOutput = (outputEdges[0] + outputEdges[1] + outputEdges[2] + outputEdges[3]) / 4;
             double distance = norm(centerOutput - centerExpected);
-            std::cout << "DISTANCE : " << distance << std::endl;
-            return distance < TOLERANCE_CENTER_DISTANCE;
+            bool test = distance < TOLERANCE_CENTER_DISTANCE;
+            return test;
         });
 
 
@@ -31,7 +31,8 @@ CompareData ALiorSolutionStrategy::compare(TableMatches expected, SolutionAResul
                                       return (int) c.getType() == (int) currentCard.cardType &&
                                              (int) c.getValue() == (int) currentCard.cardValue;
                                   });*/
-        if (found != std::end(output.cardsInImage)) {
+        bool testIt = found != output.cardsInImage.end();
+        if (testIt) {
             // found, check distance
 
             /*auto outputEdges = found->getImageEdges();
