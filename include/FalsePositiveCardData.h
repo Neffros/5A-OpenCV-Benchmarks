@@ -46,7 +46,7 @@ private:
             max.y = std::max(max.y, position.y);
         }
 
-        const cv::Mat cardImage = tableImage(cv::Rect(min.x, min.y, max.x - min.x, max.y - min.y));
+        const cv::Mat cardImage = tableImage(cv::Rect(0, 0, 50, 50));
         const std::string path = "./resources/false-positive-" + std::to_string(i++) + ".jpg";
 
         cv::imwrite(path, cardImage);

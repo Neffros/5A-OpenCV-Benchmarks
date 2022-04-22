@@ -66,11 +66,10 @@ CompareData ALiorSolutionStrategy::compare(const TableMatches& expected, const S
 			std::string cardName = cardNameStream.str();
 
 			cardNameStream.str("");
-			cardNameStream << (int)found->getType() << (int)found->getValue();
+			cardNameStream << (int)found->getValue() << colors[(int)found->getType()];
 			std::string card2Name = cardNameStream.str();
-
+			
 			matchRate = similarityMap.at(cardName).at(card2Name);
-
 			foundCards.push_back(*found);
 		}
 
