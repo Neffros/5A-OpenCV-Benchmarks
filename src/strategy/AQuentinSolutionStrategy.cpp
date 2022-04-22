@@ -42,9 +42,16 @@ CompareData AQuentinSolutionStrategy::compare(TableMatches expected, SolutionBRe
             std::string card2Name = cardNameStream.str();
 
             matchRate = similarityMap.at(cardName).at(card2Name);
+            CardData cardData(currentCard.cardValue, currentCard.cardType, matchRate);
+            result.existingCards.push_back(cardData);
         }
-        CardData cardData(currentCard.cardValue, currentCard.cardType, matchRate);
-        result.existingCards.push_back(cardData);
+        else
+        {
+            //false positive
+            FalsePositiveCardData cardData(currentCard.cardValue, currentCard.cardType);
+            result.falsePositiveCards.push_back(cardData);
+        }
+
     }
 
     // todo faux positifs
